@@ -2,7 +2,7 @@
 name = "rabbitmq-stream"
 version = "0.1.0"
 description = "RabbitMQ stream Python client"
-authors = ["Igor Susic <igorsusic254@gmail.com>"]
+authors = ["Igor Susic"]
 
 [tool.poetry.dependencies]
 python = "^3.10"
