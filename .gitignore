@@ -127,3 +127,9 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# Local debugging info about network
+network
+
+# PyCharm
+.idea/
