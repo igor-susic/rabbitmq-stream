@@ -5,7 +5,7 @@ from dataclasses import dataclass
 
 from typing import List
 
-import rabbitmq_stream.codecs as codecs
+from rabbitmq_stream.types import UInt32, UInt16, Array
 
 
 logger = logging.getLogger(__name__)
@@ -15,28 +15,14 @@ class Frame:
     @staticmethod
     def construct(obj) -> bytes:
         data: bytes = obj.encode()
-        data_length: int = len(data)
-        dl = struct.pack(f'{codecs.big_endian}{codecs.uint32}', data_length)
-        logger.debug(f'Data length  = {data_length}, decoded to: {dl}')
-        frame: bytes = b'%b%b' % (dl, data)
-        logger.debug('Sending frame: %s', frame)
+        size: bytes = UInt32.encode(len(data))
+        frame: bytes = b'%b%b' % (size, data)
+
         return frame
 
     @staticmethod
-    def deconstruct(data):
+    def deconstruct(data: bytes):
         pass
-
-
-
-# class NetworkReader:
-#     pass
-
-# def Unpacker:
-#     def uint32(self, bytes) -> int:
-#         return struct.unpack('I', bytes)
-#
-#     def uint16(self, bytes) -> int:
-#         return struct.unpack
 
 
 @dataclass
@@ -67,10 +53,12 @@ class PeerPropertiesRequest:
     key: int = 17
 
     def encode(self) -> bytes:
-        format_string = f'{codecs.big_endian}{codecs.uint16*2}{codecs.uint32}'
-        first_part_of_structure = struct.pack(format_string, self.key, self.version, self.correlation_id)
-        second_part_of_structure = codecs.Array.encode(self.peer_properties)
-        request_data = b'%b%b' % (first_part_of_structure, second_part_of_structure)
+        request_data = b'%b%b%b%b' % (
+            UInt16.encode(self.key),
+            UInt16.encode(self.version),
+            UInt32.encode(self.correlation_id),
+            Array.encode(self.peer_properties)
+        )
 
         logger.debug(f'{request_data}')
         return request_data
